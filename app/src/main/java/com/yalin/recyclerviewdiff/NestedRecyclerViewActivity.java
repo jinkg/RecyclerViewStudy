@@ -200,6 +200,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
         private final Context mContext;
         private final LayoutInflater mInflater;
 
+        private SparseArrayCompat<ChildAdapter> mChildrenAdapter;
         private SparseArrayCompat<Parcelable> mChildrenState;
 
         public ParentAdapter(Context context, List<ParentItem> parents) {
@@ -207,7 +208,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
             mInflater = LayoutInflater.from(context);
             mParents = parents;
 
-            mChildrenState = new SparseArrayCompat<>(getItemCount());
+            setupChildrenAdapter();
         }
 
         @Override
@@ -223,7 +224,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
         public void onBindViewHolder(ParentViewHolder holder, int position) {
             ParentItem parentItem = mParents.get(position);
             holder.title.setText(parentItem.title);
-            holder.children.setAdapter(new ChildAdapter(mInflater, parentItem.children));
+            holder.children.setAdapter(mChildrenAdapter.get(getId(parentItem)));
             holder.children.getLayoutManager().onRestoreInstanceState(
                     mChildrenState.get(getId(parentItem)));
         }
@@ -245,6 +246,16 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
             return mParents == null ? 0 : mParents.size();
         }
 
+        private void setupChildrenAdapter() {
+            mChildrenAdapter = new SparseArrayCompat<>(getItemCount());
+            mChildrenState = new SparseArrayCompat<>(getItemCount());
+
+            if (mParents != null) {
+                for (ParentItem parentItem : mParents) {
+                    mChildrenAdapter.put(getId(parentItem), new ChildAdapter(mInflater, parentItem.children));
+                }
+            }
+        }
 
         private int getId(ParentItem parentItem) {
             return parentItem.title.hashCode();
