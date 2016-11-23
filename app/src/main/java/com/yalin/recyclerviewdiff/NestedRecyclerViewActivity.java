@@ -199,6 +199,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
 
         private final Context mContext;
         private final LayoutInflater mInflater;
+        private final RecyclerView.RecycledViewPool mRecycledViewPool;
 
         private SparseArrayCompat<ChildAdapter> mChildrenAdapter;
         private SparseArrayCompat<Parcelable> mChildrenState;
@@ -207,6 +208,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
             mContext = context;
             mInflater = LayoutInflater.from(context);
             mParents = parents;
+            mRecycledViewPool = new RecyclerView.RecycledViewPool();
 
             setupChildrenAdapter();
         }
@@ -217,6 +219,7 @@ public class NestedRecyclerViewActivity extends AppCompatActivity {
 
             final int cardVerticalMargin = mContext.getResources().getDimensionPixelSize(R.dimen.spacing_normal);
             holder.children.addItemDecoration(new ItemMarginDecoration(0, cardVerticalMargin, 0, cardVerticalMargin));
+            holder.children.setRecycledViewPool(mRecycledViewPool);
             return holder;
         }
 
